@@ -1,0 +1,165 @@
+---
+title: "Quality Control and Clustering"
+format: html
+date: today
+execute: 
+  warning: false
+  message: false
+  echo: false
+---
+
+```{r}
+library(Seurat)
+library(tidyverse)
+library(patchwork)
+library(kableExtra)
+library(scCustomize)
+
+# Avoid scientific notation
+options(scipen=999)
+
+# Load already proceseed data to save time
+# equivalent to running the code chunk of preprocessing below
+aria <- qs2::qs_read("data/20251115-aria_processed.qs2")
+
+```
+
+## Sample x treatment & slide
+
+```{r}
+metadata <-aria@meta.data |> 
+  select(sample_id,treatment,slide) |> 
+  distinct(sample_id, .keep_all = TRUE) |> 
+  as_tibble()
+  
+  kbl(metadata, caption = "") |>
+  kable_styling(full_width = F, "striped", font_size = 16)
+```
+
+## QC
+
+### QC metrics per slide
+The __nCount__ metric represents the total number of detected transcripts per cell, providing a measure of overall RNA capture efficiency and cell integrity. The __nFeature__ metric indicates the number of unique genes detected per cell, reflecting transcriptional complexity. The __median_qv__ metric reflects the median quality value of the sequencing reads, with higher values indicating more reliable base calls and overall sequencing accuracy. 
+```{r}
+
+VlnPlot(aria, features = c("nCount_Xenium", "nFeature_Xenium", "median_qv"),
+        group.by = "slide",
+        ncol = 3, pt.size = 0)
+```
+
+
+
+### QC metrics per sample and treatment
+
+Red: Aducanumab 
+Blue: IgG control  
+
+```{r}
+#| column: page
+#| fig-width: 12
+
+VlnPlot(aria, features = c("nCount_Xenium", "nFeature_Xenium", "median_qv"),
+        group.by = "sample_id",split.by = "treatment",
+        ncol = 3, pt.size = 0)
+```
+
+__Control probes__ are synthetic sequences not present in the target organism that serve to quantify technical background and non-specific binding.  
+__Control codewords__ represent invalid barcode combinations arising from decoding errors during sequential imaging rounds.  
+ Both metrics provide measures of technical noise, with elevated levels indicating reduced data quality. 
+```{r}
+
+VlnPlot(aria, features = c("nCount_ControlCodeword", "nFeature_ControlCodeword"),
+        group.by = "sample_id",
+        ncol = 2, pt.size = 0) 
+```
+
+```{r}
+
+VlnPlot(aria, features = c("nCount_ControlProbe", "nFeature_ControlProbe"),
+        group.by = "sample_id",
+        ncol = 2, pt.size = 0)
+```
+
+
+## Preprocessing and clustering
+
+Filtered cells (n = `r dim(aria)[2]`) were:
+
+1. normalized using **library-size-based normalization**, where counts for each gene were divided by the total transcript count per cell, multiplied by a scale factor of 100, and natural log-transformed (log(value + 1)). This normalization strategy, identified as optimal through systematic benchmarking on simulated spatial datasets, accounts for technical variation in transcript detection while preserving biological signal [@marcosalas2025].  
+
+
+```{r}
+#| eval: false
+
+# Normalization with log normalization
+aria <- NormalizeData(aria, normalization.method = "LogNormalize", scale.factor = 100)
+
+set.seed(1212)
+
+# Variable feature selection
+n_variable_features <- round(dim(aria)[1]*0.7)
+
+aria <- FindVariableFeatures(aria, selection.method = "vst", 
+                             nfeatures = n_variable_features )
+
+# Scale ALL genes
+aria <- ScaleData(aria, features = rownames(aria))
+
+# Run PCA with variable features and 30 PCs
+# The besta practices article found that:
+# - Too few PCs (e.g., 10): May miss biological variation
+# - Too many PCs: May include technical noise
+# - Optimal range: 20-50 PCs for most datasets
+aria <- RunPCA (aria, features = VariableFeatures(aria), npcs = 30)
+
+# Run UMAP
+aria <- RunUMAP(aria, dims = 1:dim(aria@reductions$pca)[2])
+
+# Run KNN with k = 16
+aria <- FindNeighbors(aria, dims = 1:dim(aria@reductions$pca)[2],
+                     k.param = 16)
+
+# Louvain clustering with resolution = 0.5
+aria <- FindClusters(aria, resolution = 0.5)
+
+# qs2::qs_save(aria, "data/20251115-aria_processed.qs2")
+```
+
+2. Identified the top 70% most variable genes (n = `r dim(aria)[1]*0.7`) for downstream analyses.
+3. Scaled and center the data to unit variance and zero mean.
+4. run PCA on the most variable features with `r dim(aria@reductions$pca)[2]` PCs.
+5. Constructed a K-nearest neighbor graph with each cell connected to its k = 16 nearest neighbors.
+6. Clustered cells using the Louvain algorithm with a resolution parameter of 0.5.
+
+```{r}
+#| fig-width: 6
+colorines <- scCustomize_Palette(num_groups = n_distinct(aria$seurat_clusters), ggplot_default_colors = FALSE)
+
+DimPlot(aria, label = T, cols = colorines) + 
+  NoLegend() 
+```
+
+```{r}
+#| column: page
+#| fig-width: 10
+DimPlot(aria, label = T, split.by = "treatment", cols = colorines) + 
+  NoLegend()
+```
+
+```{r}
+#| column: page
+#| fig-width: 12
+#| fig-height: 8
+DimPlot(aria, split.by = "sample_id", group.by = "treatment",label = F, ncol=3)
+```
+
+```{r}
+ImageDimPlot(aria, split.by = "sample_id", dark.background = FALSE, combine = TRUE, cols = colorines, fov = "fov") + 
+  NoLegend()
+```
+
+```{r}
+ImageDimPlot(aria, split.by = "sample_id", dark.background = FALSE, combine = TRUE, cols = colorines, fov = "fov.2") + 
+  NoLegend()
+```
+
