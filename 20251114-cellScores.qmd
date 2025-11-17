@@ -1,0 +1,125 @@
+---
+title: "Manual cell type annotation"
+subtitle: "via module scores"
+date: today
+execute: 
+  echo: false
+  warning: false
+  message: false
+format: html
+---
+
+```{r}
+library(Seurat)
+library(tidyverse)
+library(kableExtra)
+library(patchwork)
+library(compareGroups)
+
+# Load already proceseed data to save time
+# equivalent to running the code chunk of preprocessing below
+aria <- qs2::qs_read("data/20251115-aria_processed.qs2")
+```
+
+## Module scores
+
+```{r}
+# Define marker genes for different cell types
+marker_genes <- list(
+  Neurons = c("Snap25", "Grin2a", "Grin2b"),
+  Excitatory_neurons = c("Rorb", "Rapgef3", "Rspo1", "Whrn", "Tunar", "Pou3f1", "Tshz2","Syt6"),
+  Inhibitory_neurons = c( "Lamp5", "Ndnf", "Pvalb", "Nts", "Tac1", "Sncg", "Sst", "Calb1", "Vip", "Calb2", "Pthlh", "Crh"),
+  Astrocytes = c("Aldh1l1","Aldoc","Gfap","Slc7a10","Aqp4"),
+  Oligodendrocytes = c("Ermn","Cldn11", "Mog"),
+  Microglia = c("Tmem119", "Aif1", "Trem2", "P2ry12"),
+  Ependymal = c("Ccdc153", "Dnah11","Tmem212"),
+  OPC = c("Pdgfra","Opcml","Tnr"),
+  Vascular_leptomeningeal = c("Mgp", "Bgn", "Slc47a1"),
+  VSMC = c("Acta2", "Tagln"),
+  Pericytes = c("Vtn", "Kcnj8","Atp13a5"),
+  Endothelial = c("Cldn5", "Flt1", "Emcn"),
+  Choroid_plexus = c("Mki67","Car12","Ttr"),
+  Fibroblasts = c("Col1a2","Lum"),
+  Neuroprogenitors = c("Dcx","Pax6"),
+  Macrophages = c("Mgl2","Mrc1"),
+  T_cells = c("Cd3d", "Gzmb", "Pdcd1"),
+  NK_cells = c("Klrb1c"),
+  Mast_cells = c("Tpsab1","Tpsb2","Fcer1a"),
+  Monocytes = c("Plac8", "Msr1"),
+  Neutrophils = c("Ly6g", "Camp"),
+  Dendritic_cells = c("Cd209a","Clec10a"),
+  PBMC = c("Cd247"))
+
+
+# Store signature names for later use in renaming columns
+marker_names <- names(marker_genes)
+
+
+# Calculate module scores for each signature 
+# This computes the average expression of signature genes minus average expression of control genes
+
+
+# Calculate module scores for each cell type marker
+# Include the resulting scores in the metadata of the Seurat object
+aria <- AddModuleScore(
+  object = aria,
+  features = marker_genes,
+  name = "Marker",
+  ctrl = 20,
+  seed = 42)
+```
+
+```{r}
+kbl(tibble(
+  Marker = marker_names,
+  Genes = map (marker_genes,\(x) paste(x, collapse = ", "))),
+  caption = "Marker genes used for module score calculation") |>
+  kable_styling(full_width = F, "striped")
+```
+
+Module scores were calculated using the `AddModuleScore` function in Seurat, which computes for each cell the average expression of signature genes minus the average expression of 20 randomly selected control genes, thereby controlling for technical variation and background expression levels.
+
+```{r}
+#| column: page
+#| fig-width: 12
+#| fig-height: 23
+
+# Rename module score columns
+n_new  <- length(marker_genes)
+idx    <- (ncol(aria@meta.data) - n_new + 1):ncol(aria@meta.data)  # Index of new columns
+colnames(aria@meta.data)[idx] <- paste0(marker_names, " Score") 
+
+# Visualize module scores on UMAP
+
+markers <- FeaturePlot(aria, features = names(aria@meta.data)[idx],
+            cols = c("#fdf9f9ff", "#cc0000"),
+            # 
+            min.cutoff ="q20",max.cutoff = "q90",
+            combine = FALSE) |> 
+map(\(x) x + NoAxes() + NoLegend() + 
+            theme(plot.title = element_text(size = 12, vjust = 0),
+                  panel.border = element_blank()))
+
+# Arrange plots in a grid
+wrap_plots(markers, ncol = 3)
+```
+
+## Statistical comparison of module scores by treatment
+
+To compare cell type enrichment between treatment groups at the sample level, we extracted module scores from the Seurat object metadata along with sample identifiers and treatment assignments. We calculated the median module score for each cell type signature within each biological replicate, reducing the data from single-cell resolution to sample-level summaries. This aggregation accounts for the hierarchical structure of the experimental design, where cells are nested within samples, and samples represent the true biological replicates for treatment comparison.
+
+```{r}
+scores <- aria@meta.data |> 
+  select(ends_with("Score"), sample_id, treatment) |> 
+  group_by(sample_id, treatment) |> 
+  summarize(across(ends_with("Score"), median), .groups = "drop")
+
+c1 <- compareGroups(treatment ~ .-sample_id, data = scores, method = 2)
+
+res <- createTable(c1, digits = 3)
+export2md(res, caption = "")
+```
+
+Vascular and stromal cell populations showed subtle but consistent reductions under Aducanumab treatment. Vascular leptomeningeal cells and fibroblasts both demonstrated lower enrichment scores in Aducanumab-treated samples compared to IgG controls, approaching statistical significance (p = 0.050 for both).
+
+The most notable treatment-associated changes were observed in peripheral immune cell populations. Monocyte signatures showed significant reduction in Aducanumab-treated samples compared to IgG controls (p = 0.037). Dendritic cell signatures similarly decreased in Aducanumab-treated samples (p = 0.037). Macrophage signatures showed borderline significance (p = 0.050).
