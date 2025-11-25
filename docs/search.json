@@ -1,0 +1,85 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "ARIA",
+    "section": "",
+    "text": "Introduction\nThis is a Quarto book to study the Xenium analysis ARIA (Amyloid-Related Imaging Abnormalities) in human APOE4 mice treated with Aducanumab",
+    "crumbs": [
+      "Introduction"
+    ]
+  },
+  {
+    "objectID": "20251113-QC&normalization.html",
+    "href": "20251113-QC&normalization.html",
+    "title": "1  Quality Control and Clustering",
+    "section": "",
+    "text": "1.1 Sample x treatment & slide\nsample_id\ntreatment\nslide\n\n\n\n\nKK4_465\nIgG\nSlide1_0021991\n\n\nKK4_492\nAdu\nSlide1_0021991\n\n\nKK4_504\nIgG\nSlide1_0021991\n\n\nKK4_502\nAdu\nSlide2_0021998\n\n\nKK4_464\nAdu\nSlide2_0021998\n\n\nKK4_496\nIgG\nSlide2_0021998",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Quality Control and Clustering</span>"
+    ]
+  },
+  {
+    "objectID": "20251113-QC&normalization.html#qc",
+    "href": "20251113-QC&normalization.html#qc",
+    "title": "1  Quality Control and Clustering",
+    "section": "1.2 QC",
+    "text": "1.2 QC\n\n1.2.1 QC metrics per slide\nThe nCount metric represents the total number of detected transcripts per cell, providing a measure of overall RNA capture efficiency and cell integrity. The nFeature metric indicates the number of unique genes detected per cell, reflecting transcriptional complexity. The median_qv metric reflects the median quality value of the sequencing reads, with higher values indicating more reliable base calls and overall sequencing accuracy.\n\n\n\n\n\n\n\n\n\n\n\n1.2.2 QC metrics per sample and treatment\nRed: Aducanumab Blue: IgG control\n\n\n\n\n\n\n\n\n\nControl probes are synthetic sequences not present in the target organism that serve to quantify technical background and non-specific binding.\nControl codewords represent invalid barcode combinations arising from decoding errors during sequential imaging rounds.\nBoth metrics provide measures of technical noise, with elevated levels indicating reduced data quality.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Quality Control and Clustering</span>"
+    ]
+  },
+  {
+    "objectID": "20251113-QC&normalization.html#preprocessing-and-clustering",
+    "href": "20251113-QC&normalization.html#preprocessing-and-clustering",
+    "title": "1  Quality Control and Clustering",
+    "section": "1.3 Preprocessing and clustering",
+    "text": "1.3 Preprocessing and clustering\nFiltered cells (n = 359708) were:\n\nnormalized using library-size-based normalization, where counts for each gene were divided by the total transcript count per cell, multiplied by a scale factor of 100, and natural log-transformed (log(value + 1)). This normalization strategy, identified as optimal through systematic benchmarking on simulated spatial datasets, accounts for technical variation in transcript detection while preserving biological signal (Marco Salas et al. 2025).\n\n\nIdentified the top 70% most variable genes (n = 336) for downstream analyses.\nScaled and center the data to unit variance and zero mean.\nrun PCA on the most variable features with 30 PCs.\nConstructed a K-nearest neighbor graph with each cell connected to its k = 16 nearest neighbors.\nClustered cells using the Louvain algorithm with a resolution parameter of 0.5.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nMarco Salas, Sergio, Louis B. Kuemmerle, Christoffer Mattsson-Langseth, Sebastian Tismeyer, Christophe Avenel, Taobo Hu, Habib Rehman, et al. 2025. “Optimizing Xenium In Situ Data Utility by Quality Assessment and Best-Practice Analysis Workflows.” Nature Methods 22 (4): 813–23. https://doi.org/10.1038/s41592-025-02617-2.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Quality Control and Clustering</span>"
+    ]
+  },
+  {
+    "objectID": "20251114-cellScores.html",
+    "href": "20251114-cellScores.html",
+    "title": "2  Manual cell type annotation",
+    "section": "",
+    "text": "2.1 Module scores\nMarker genes used for module score calculation\n\n\nMarker\nGenes\n\n\n\n\nNeurons\nSnap25, Grin2a, Grin2b\n\n\nExcitatory_neurons\nRorb, Rapgef3, Rspo1, Whrn, Tunar, Pou3f1, Tshz2, Syt6\n\n\nInhibitory_neurons\nLamp5, Ndnf, Pvalb, Nts, Tac1, Sncg, Sst, Calb1, Vip, Calb2, Pthlh, Crh\n\n\nAstrocytes\nAldh1l1, Aldoc, Gfap, Slc7a10, Aqp4\n\n\nOligodendrocytes\nErmn, Cldn11, Mog\n\n\nMicroglia\nTmem119, Aif1, Trem2, P2ry12\n\n\nEpendymal\nCcdc153, Dnah11, Tmem212\n\n\nOPC\nPdgfra, Opcml, Tnr\n\n\nVascular_leptomeningeal\nMgp, Bgn, Slc47a1\n\n\nVSMC\nActa2, Tagln\n\n\nPericytes\nVtn, Kcnj8, Atp13a5\n\n\nEndothelial\nCldn5, Flt1, Emcn\n\n\nChoroid_plexus\nMki67, Car12, Ttr\n\n\nFibroblasts\nCol1a2, Lum\n\n\nNeuroprogenitors\nDcx, Pax6\n\n\nMacrophages\nMgl2, Mrc1\n\n\nT_cells\nCd3d, Gzmb, Pdcd1\n\n\nNK_cells\nKlrb1c\n\n\nMast_cells\nTpsab1, Tpsb2, Fcer1a\n\n\nMonocytes\nPlac8, Msr1\n\n\nNeutrophils\nLy6g, Camp\n\n\nDendritic_cells\nCd209a, Clec10a\n\n\nPBMC\nCd247\nModule scores were calculated using the AddModuleScore function in Seurat, which computes for each cell the average expression of signature genes minus the average expression of 20 randomly selected control genes, thereby controlling for technical variation and background expression levels.",
+    "crumbs": [
+      "Cell type annotation",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Manual cell type annotation</span>"
+    ]
+  },
+  {
+    "objectID": "20251114-cellScores.html#statistical-comparison-of-module-scores-by-treatment",
+    "href": "20251114-cellScores.html#statistical-comparison-of-module-scores-by-treatment",
+    "title": "2  Manual cell type annotation",
+    "section": "2.2 Statistical comparison of module scores by treatment",
+    "text": "2.2 Statistical comparison of module scores by treatment\nTo compare cell type enrichment between treatment groups at the sample level, we extracted module scores from the Seurat object metadata along with sample identifiers and treatment assignments. We calculated the median module score for each cell type signature within each biological replicate, reducing the data from single-cell resolution to sample-level summaries. This aggregation accounts for the hierarchical structure of the experimental design, where cells are nested within samples, and samples represent the true biological replicates for treatment comparison.\n\n\n\n\n\n\nAdu\nIgG\np.overall\n\n\n\n\n\nN=3\nN=3\n\n\n\nNeurons Score\n-0.009 [-0.045;-0.002]\n0.009 [0.003;0.013]\n0.127\n\n\nExcitatory_neurons Score\n-0.010 [-0.011;-0.010]\n-0.009 [-0.011;-0.008]\n0.275\n\n\nInhibitory_neurons Score\n-0.030 [-0.032;-0.028]\n-0.024 [-0.026;-0.024]\n0.127\n\n\nAstrocytes Score\n0.024 [0.016;0.036]\n0.033 [0.003;0.036]\n0.827\n\n\nOligodendrocytes Score\n-0.255 [-0.256;-0.253]\n-0.252 [-0.257;-0.249]\n0.513\n\n\nMicroglia Score\n-0.049 [-0.049;-0.048]\n-0.047 [-0.049;-0.046]\n0.827\n\n\nEpendymal Score\n-0.007 [-0.007;-0.006]\n-0.006 [-0.006;-0.006]\n0.127\n\n\nOPC Score\n-0.051 [-0.054;-0.047]\n-0.044 [-0.045;-0.043]\n0.275\n\n\nVascular_leptomeningeal Score\n-0.020 [-0.020;-0.019]\n-0.018 [-0.018;-0.018]\n0.050\n\n\nVSMC Score\n-0.023 [-0.025;-0.020]\n-0.024 [-0.030;-0.022]\n0.513\n\n\nPericytes Score\n-0.036 [-0.037;-0.035]\n-0.036 [-0.037;-0.034]\n0.827\n\n\nEndothelial Score\n-0.063 [-0.065;-0.061]\n-0.062 [-0.063;-0.061]\n0.513\n\n\nChoroid_plexus Score\n-0.030 [-0.031;-0.026]\n-0.028 [-0.030;-0.026]\n0.827\n\n\nFibroblasts Score\n-0.017 [-0.017;-0.016]\n-0.016 [-0.016;-0.015]\n0.050\n\n\nNeuroprogenitors Score\n-0.014 [-0.014;-0.013]\n-0.014 [-0.014;-0.013]\n0.827\n\n\nMacrophages Score\n-0.004 [-0.004;-0.004]\n-0.004 [-0.004;-0.004]\n0.050\n\n\nT_cells Score\n-0.003 [-0.004;-0.003]\n-0.003 [-0.003;-0.003]\n0.513\n\n\nMonocytes Score\n-0.001 [-0.001;-0.001]\n0.000 [0.000;0.000]\n0.037\n\n\nDendritic_cells Score\n-0.002 [-0.002;-0.001]\n0.000 [0.000;0.000]\n0.037\n\n\n\n\n\nVascular and stromal cell populations showed subtle but consistent reductions under Aducanumab treatment. Vascular leptomeningeal cells and fibroblasts both demonstrated lower enrichment scores in Aducanumab-treated samples compared to IgG controls, approaching statistical significance (p = 0.050 for both).\nThe most notable treatment-associated changes were observed in peripheral immune cell populations. Monocyte signatures showed significant reduction in Aducanumab-treated samples compared to IgG controls (p = 0.037). Dendritic cell signatures similarly decreased in Aducanumab-treated samples (p = 0.037). Macrophage signatures showed borderline significance (p = 0.050).",
+    "crumbs": [
+      "Cell type annotation",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Manual cell type annotation</span>"
+    ]
+  },
+  {
+    "objectID": "2025112-FindAllMarkers.html",
+    "href": "2025112-FindAllMarkers.html",
+    "title": "3  Manual cell type annotation II",
+    "section": "",
+    "text": "3.1 Finding cluster markers with FindAllMarkers\nFind markers with log2FC threshold of 0.25 and minimum percentage expression of 20%\n5 top markers per cluster in terms of log2FC as all p-value adjusteds are 0.\nSelected 39 unique genes of interest and fetched their normalized expression data for visualization.",
+    "crumbs": [
+      "Cell type annotation",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Manual cell type annotation II</span>"
+    ]
+  },
+  {
+    "objectID": "references.html",
+    "href": "references.html",
+    "title": "References",
+    "section": "",
+    "text": "Marco Salas, Sergio, Louis B. Kuemmerle, Christoffer Mattsson-Langseth,\nSebastian Tismeyer, Christophe Avenel, Taobo Hu, Habib Rehman, et al.\n2025. “Optimizing Xenium In Situ Data Utility by Quality\nAssessment and Best-Practice Analysis Workflows.” Nature\nMethods 22 (4): 813–23. https://doi.org/10.1038/s41592-025-02617-2.",
+    "crumbs": [
+      "References"
+    ]
+  }
+]
