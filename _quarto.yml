@@ -1,0 +1,29 @@
+project:
+  type: book
+  output-dir: docs
+
+book:
+  title: "ARIA"
+  author: "JMAM"
+  date: "11/25/2025"
+  chapters:
+    - index.qmd
+    - 20251113-QC&normalization.qmd
+    - part: "Cell type annotation"
+      chapters:
+        - 20251114-cellScores.qmd
+        - 2025112-FindAllMarkers.qmd
+    - references.qmd
+
+bibliography: references.bib
+
+format:
+  html:
+    theme:
+      - cosmo
+      - brand
+  pdf:
+    documentclass: scrreprt
+
+
+
