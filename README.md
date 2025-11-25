@@ -1,11 +1,13 @@
 ## ARIA: Xenium Spatial Transcriptomics Analysis
 
-  ### Overview
+https://ljohnsonlab.github.io/ARIA_Xenium/
+
+### Overview
 
   This project contains a reproducible Quarto book documenting the analysis of Xenium spatial transcriptomics data from the ARIA study, investigating the effects of Aducanumab 
   treatment on brain tissue at single-cell resolution with spatial context.
 
-  ### Study Design
+### Study Design
 
   - Platform: 10x Genomics Xenium In Situ spatial transcriptomics
   - Treatment Groups:
@@ -15,4 +17,4 @@
     - Slide 1 (0021991): KK4_465, KK4_492, KK4_504
     - Slide 2 (0021998): KK4_496, KK4_502, KK4_464
 
-  ### Analysis Pipeline
+  
