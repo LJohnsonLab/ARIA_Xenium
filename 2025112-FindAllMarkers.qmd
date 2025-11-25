@@ -1,0 +1,110 @@
+---
+title: "Manual cell type annotation II"
+subtitle: "via `FindAllMarkers`"
+date: today
+execute: 
+  echo: false
+  warning: false
+  message: false
+format: html
+---
+
+```{r}
+library(Seurat)
+library(tidyverse)
+library(kableExtra)
+library(patchwork)
+library(compareGroups)
+
+# Load the processed ARIA dataset
+aria <- qs2::qs_read("data/20251115-aria_processed.qs2")
+```
+
+## Finding cluster markers with `FindAllMarkers`
+
+Find markers with log2FC threshold of 0.25 and minimum percentage expression of 20%
+
+
+```{r}
+#| eval: false
+Idents(aria) <- "seurat_clusters"
+# Find markers with log2FC threshold of 0.25 and minimum percentage expression of 20%
+all_markers <- FindAllMarkers(aria, only.pos = F, min.pct = 0.2, logfc.threshold = 0.25)
+
+# write_csv(all_markers, "data/20251124-aria_all_markers.csv")
+
+```
+
+__5 top markers per cluster in terms of log2FC as all p-value adjusteds are 0.__
+
+```{r}
+genes_of_interest <- read_csv("data/20251124-aria_all_markers.csv") |> 
+    arrange(cluster, avg_log2FC) |> 
+    group_by(cluster) |>
+    slice_head(n = 5) |> 
+    pull(gene) |> 
+    unique()
+```
+
+ Selected `r length(genes_of_interest)` unique genes of interest and fetched their normalized expression data for visualization.
+ 
+
+```{r}
+#| column: screen
+#| fig-width: 15
+#| fig-height: 10
+
+library(gtable)
+library(grid)
+library(ggtext)
+
+
+# Fetch count data for the genes of interest
+violin_data <- FetchData(aria, c(genes_of_interest,"seurat_clusters"), layer = "scale.data")
+
+
+violin_data_long <- violin_data  |> 
+    pivot_longer(-seurat_clusters) |> 
+    mutate(seurat_clusters = fct_rev(seurat_clusters),
+           name = factor(name, levels = genes_of_interest))
+
+cluster_levels <- levels(violin_data_long$seurat_clusters)
+palette_colors <- scales::hue_pal()(length(cluster_levels))
+names(palette_colors) <- cluster_levels
+
+axis_labels <- setNames(cluster_levels, cluster_levels)
+
+p <- ggplot(violin_data_long, aes(x = seurat_clusters, y = value, fill = seurat_clusters)) +
+    geom_violin(aes(color = seurat_clusters),
+                scale = "width", trim = TRUE, adjust = 1, show.legend = FALSE) +
+    coord_flip() +
+    scale_fill_manual(values = palette_colors) +
+    scale_color_manual(values = palette_colors) +
+    facet_wrap(~name, scales = "free_x", nrow = 1) +
+    theme_minimal() +
+    labs(x = "Cluster", y = "Expression Levels") +
+    theme(
+        legend.position = "left",
+        axis.text.y = element_text(size = 12, color = palette_colors[cluster_levels]),
+        axis.text.x = element_blank(),
+        axis.title = element_text(size = 14, color = "grey30"),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        strip.text = element_text(size = 10, face = "italic", angle = 30)
+    ) +
+    scale_x_discrete(labels = axis_labels)
+
+g <- ggplotGrob(p)
+axis_grobs <- which(grepl("axis-l", g$layout$name))
+
+invisible(
+  map(axis_grobs, function(i) {
+    if (g$layout[i, "name"] != "axis-l-1-1") {
+      g$grobs[[i]] <<- nullGrob()
+    }
+  })
+)
+
+grid.newpage()
+grid.draw(g)
+```
