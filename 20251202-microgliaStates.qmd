@@ -1,0 +1,109 @@
+---
+title: "Microglia states identification"
+subtitle: ""
+date: today
+execute: 
+  echo: false
+  warning: false
+  message: false
+format: html
+---
+
+
+```{r}
+library(Seurat)
+library(tidyverse)
+library(patchwork)
+### for violin plot customization
+library(gtable)
+library(grid)
+library(ggtext)
+
+microglia <- qs2::qs_read("data/20251202-microglia_processed.qs2")
+
+
+```
+
+
+## Finding cluster markers with `FindAllMarkers`
+
+```{r}
+# Set cluster identities
+Idents(microglia) <- "seurat_clusters"
+# Find markers with log2FC threshold of 0.25 and minimum percentage expression of 20%
+microglia_markers <- FindAllMarkers(microglia, only.pos = F, min.pct = 0.5, logfc.threshold = 1)
+
+
+
+```
+
+__5 top markers per cluster in terms of log2FC as all adjusted p-values are 0.__
+
+```{r}
+genes_of_interest <- microglia_markers |> 
+    group_by(cluster) |>
+    arrange(desc(abs(avg_log2FC)),.by_group = T) |> 
+    slice_head(n = 5) |> 
+    pull(gene) |> 
+    unique()
+```
+
+ Selected `r length(genes_of_interest)` unique genes of interest and fetched their normalized expression data for visualization.
+ 
+
+```{r}
+#| column: screen
+#| fig-width: 15
+#| fig-height: 8
+
+
+
+# Fetch count data for the genes of interest
+violin_data <- FetchData(microglia, c(genes_of_interest,"seurat_clusters"), layer = "scale.data")
+
+
+violin_data_long <- violin_data  |> 
+    pivot_longer(-seurat_clusters) |> 
+    mutate(seurat_clusters = fct_rev(seurat_clusters),
+           name = factor(name, levels = genes_of_interest))
+
+cluster_levels <- levels(violin_data_long$seurat_clusters)
+palette_colors <- scales::hue_pal()(length(cluster_levels))
+names(palette_colors) <- cluster_levels
+
+axis_labels <- setNames(cluster_levels, cluster_levels)
+
+p <- ggplot(violin_data_long, aes(x = seurat_clusters, y = value, fill = seurat_clusters)) +
+    geom_violin(aes(color = seurat_clusters),
+                scale = "width", trim = TRUE, adjust = 1, show.legend = FALSE) +
+    coord_flip() +
+    scale_fill_manual(values = palette_colors) +
+    scale_color_manual(values = palette_colors) +
+    facet_wrap(~name, scales = "free_x", nrow = 1) +
+    theme_minimal() +
+    labs(x = "Cluster", y = "Expression Levels") +
+    theme(
+        legend.position = "left",
+        axis.text.y = element_text(size = 12, color = palette_colors[cluster_levels]),
+        axis.text.x = element_blank(),
+        axis.title = element_text(size = 14, color = "grey30"),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        strip.text = element_text(size = 10, face = "italic", angle = 90)
+    ) +
+    scale_x_discrete(labels = axis_labels)
+
+g <- ggplotGrob(p)
+axis_grobs <- which(grepl("axis-l", g$layout$name))
+
+invisible(
+  map(axis_grobs, function(i) {
+    if (g$layout[i, "name"] != "axis-l-1-1") {
+      g$grobs[[i]] <<- nullGrob()
+    }
+  })
+)
+
+grid.newpage()
+grid.draw(g)
+```

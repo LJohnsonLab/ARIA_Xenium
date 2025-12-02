@@ -1,0 +1,91 @@
+---
+title: "Microglia subclusters"
+subtitle: ""
+date: today
+execute: 
+  echo: false
+  warning: false
+  message: false
+format: html
+---
+
+```{r}
+#| eval: false
+
+# microglia subsetting
+# Load the processed ARIA dataset
+aria <- qs2::qs_read("data/20251115-aria_processed.qs2")
+microglia <- subset(aria, idents = "1")
+qs2::qs_save(microglia, "data/20251202-microglia.qs2")
+```
+```{r}
+library(Seurat)
+library(tidyverse)
+library(patchwork)
+
+
+aria <- qs2::qs_read("data/20251115-aria_processed.qs2")
+# Load microglia dataset already reclusteres and processed to save time
+microglia <- qs2::qs_read("data/20251202-microglia_processed.qs2")
+
+
+```
+
+Microglia cells (n = `r dim(microglia)[2]`) from cluster 1 were re-clustered to identify subpopulations.
+
+
+```{r}
+#| eval: false
+
+# Normalization with log normalization
+microglia <- NormalizeData(microglia, normalization.method = "LogNormalize", scale.factor = 100)
+
+set.seed(1212)
+
+# Variable feature selection
+n_variable_features <- round(dim(microglia)[1]*0.7)
+
+microglia <- FindVariableFeatures(microglia, selection.method = "vst", 
+  nfeatures = n_variable_features )
+
+
+# Scale ALL genes
+microglia <- ScaleData(microglia, features = rownames(microglia))
+
+# Run PCA
+microglia <- RunPCA (microglia, features = VariableFeatures(microglia), npcs = 30)
+
+# Run UMAP
+microglia <- RunUMAP(microglia, dims = 1:dim(microglia@reductions$pca)[2])
+
+# Run KNN with k = 16
+microglia <- FindNeighbors(microglia, dims = 1:dim(microglia@reductions$pca)[2],
+                     k.param = 16)
+
+# Louvain clustering with resolution = 0.5
+microglia <- FindClusters(microglia, )
+
+# qs2::qs_save(microglia, "data/20251202-microglia_processed.qs2")
+```
+
+
+```{r}
+#| column: page
+#| fig-width: 12
+
+aria <- DimPlot(aria, reduction = "umap", label = TRUE, label.size = 5) +
+     NoLegend()+ ggtitle("ARIA dataset clusters")
+
+mg <- DimPlot(microglia, reduction = "umap", label = TRUE, label.size = 5) + NoLegend() +
+     labs(title = "Microglia subclusters (resolution = 0.5)", subtitle = "Reclustered from ARIA cluster 1")
+
+aria|mg
+```
+
+
+```{r}
+#| column: page
+#| fig-width: 12
+DimPlot(microglia, reduction = "umap", label = TRUE, label.size = 5, split.by = "treatment") + NoLegend() +
+     labs(title = "Microglia subclusters (resolution = 0.5)", subtitle = "Reclustered from ARIA cluster 1")
+```

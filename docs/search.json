@@ -73,6 +73,28 @@
     ]
   },
   {
+    "objectID": "20251202-microgliaReclustering.html",
+    "href": "20251202-microgliaReclustering.html",
+    "title": "4  Microglia subclusters",
+    "section": "",
+    "text": "Microglia cells (n = 4.0314^{4}) from cluster 1 were re-clustered to identify subpopulations.",
+    "crumbs": [
+      "Microglia characterization",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Microglia subclusters</span>"
+    ]
+  },
+  {
+    "objectID": "20251202-microgliaStates.html",
+    "href": "20251202-microgliaStates.html",
+    "title": "5  Microglia states identification",
+    "section": "",
+    "text": "5.1 Finding cluster markers with FindAllMarkers\n5 top markers per cluster in terms of log2FC as all adjusted p-values are 0.\nSelected 55 unique genes of interest and fetched their normalized expression data for visualization.",
+    "crumbs": [
+      "Microglia characterization",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Microglia states identification</span>"
+    ]
+  },
+  {
     "objectID": "references.html",
     "href": "references.html",
     "title": "References",

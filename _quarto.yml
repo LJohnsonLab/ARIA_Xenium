@@ -13,6 +13,10 @@ book:
       chapters:
         - 20251114-cellScores.qmd
         - 2025112-FindAllMarkers.qmd
+    - part: "Microglia characterization"
+      chapters:
+        - 20251202-microgliaReclustering.qmd
+        - 20251202-microgliaStates.qmd
     - references.qmd
 
 bibliography: references.bib
