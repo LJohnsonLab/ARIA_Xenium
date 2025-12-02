@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2025-11-25">
+<meta name="dcterms.date" content="2025-12-02">
 
 <title>3&nbsp; Manual cell type annotation II – ARIA</title>
 <style>
@@ -180,7 +180,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">November 25, 2025</p>
+      <p class="date">December 2, 2025</p>
     </div>
   </div>
   
@@ -194,9 +194,12 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="finding-cluster-markers-with-findallmarkers" class="level2 page-columns page-full" data-number="3.1">
 <h2 data-number="3.1" class="anchored" data-anchor-id="finding-cluster-markers-with-findallmarkers"><span class="header-section-number">3.1</span> Finding cluster markers with <code>FindAllMarkers</code></h2>
-<p>Find markers with log2FC threshold of 0.25 and minimum percentage expression of 20%</p>
-<p><strong>5 top markers per cluster in terms of log2FC as all p-value adjusteds are 0.</strong></p>
-<p>Selected 39 unique genes of interest and fetched their normalized expression data for visualization.</p>
+<p>Find markers expressed in at least 50 percent of cells with minimum 2.72-fold expression differences between clusters, returning both upregulated and downregulated markers for each population.</p>
+<p><strong>The statistical interpretation of differential expression testing requires careful consideration in the context of targeted gene panels</strong>. The <code>FindAllMarkers</code> function in Seurat applies hypothesis testing, typically using the Wilcoxon rank-sum test, under the assumption that most genes in the dataset show no differential expression between cell populations. This assumption holds for whole-transcriptome single-cell RNA-seq experiments where approximately 20,000 genes are measured, most of which serve as housekeeping genes or remain irrelevant to specific cell-type distinctions. However, this assumption fails when analyzing Xenium data generated from a targeted panel of 480 genes specifically designed to differentiate cell populations.</p>
+<p><strong>The pre-selection of genes based on their known cell-type-specific expression patterns introduces a fundamental bias that invalidates traditional significance testing</strong>. Every gene in the panel was chosen precisely because it varies meaningfully across cell types, effectively removing the null background distribution that p-value calculations depend upon. Consequently, nearly all genes will test as statistically significant between clusters, not because of the strength of the biological signal alone but because the statistical framework assumes a scenario that does not match the experimental design. <em>The resulting p-values therefore lack interpretive validity and should not guide marker gene selection or cluster characterization</em>.</p>
+<p><strong>For this analysis, marker gene identification relies on effect sizes rather than significance testing</strong>. Genes are ranked and evaluated based on log fold changes, the percentage of cells expressing each marker within and between clusters, and average expression differences. These metrics provide direct measures of biological relevance without invoking inappropriate statistical assumptions. (<em>Alternatively, the area under the ROC curve serves as an alternative ranking metric, as it quantifies discriminatory power between cell populations without requiring assumptions about the underlying gene expression distribution</em>).</p>
+<p><strong>3 top markers per cluster in terms of log2FC as all adjusted p-values are 0.</strong></p>
+<p>Selected 57 unique genes of interest and fetched their normalized expression data for visualization.</p>
 <div class="cell page-columns page-full">
 <div class="cell-output-display page-columns page-full">
 <div class="page-columns page-full">

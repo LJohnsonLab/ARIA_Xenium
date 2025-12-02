@@ -12,9 +12,12 @@ format: html
 ```{r}
 library(Seurat)
 library(tidyverse)
-library(kableExtra)
 library(patchwork)
-library(compareGroups)
+### for violin plot customization
+library(gtable)
+library(grid)
+library(ggtext)
+
 
 # Load the processed ARIA dataset
 aria <- qs2::qs_read("data/20251115-aria_processed.qs2")
@@ -22,26 +25,30 @@ aria <- qs2::qs_read("data/20251115-aria_processed.qs2")
 
 ## Finding cluster markers with `FindAllMarkers`
 
-Find markers with log2FC threshold of 0.25 and minimum percentage expression of 20%
+Find markers expressed in at least 50 percent of cells with minimum 2.72-fold expression differences between clusters, returning both upregulated and downregulated markers for each population.  
 
+__The statistical interpretation of differential expression testing requires careful consideration in the context of targeted gene panels__. The `FindAllMarkers` function in Seurat applies hypothesis testing, typically using the Wilcoxon rank-sum test, under the assumption that most genes in the dataset show no differential expression between cell populations. This assumption holds for whole-transcriptome single-cell RNA-seq experiments where approximately 20,000 genes are measured, most of which serve as housekeeping genes or remain irrelevant to specific cell-type distinctions. However, this assumption fails when analyzing Xenium data generated from a targeted panel of 480 genes specifically designed to differentiate cell populations.
 
+__The pre-selection of genes based on their known cell-type-specific expression patterns introduces a fundamental bias that invalidates traditional significance testing__. Every gene in the panel was chosen precisely because it varies meaningfully across cell types, effectively removing the null background distribution that p-value calculations depend upon. Consequently, nearly all genes will test as statistically significant between clusters, not because of the strength of the biological signal alone but because the statistical framework assumes a scenario that does not match the experimental design. _The resulting p-values therefore lack interpretive validity and should not guide marker gene selection or cluster characterization_.
+
+__For this analysis, marker gene identification relies on effect sizes rather than significance testing__. Genes are ranked and evaluated based on log fold changes, the percentage of cells expressing each marker within and between clusters, and average expression differences. These metrics provide direct measures of biological relevance without invoking inappropriate statistical assumptions. (_Alternatively, the area under the ROC curve serves as an alternative ranking metric, as it quantifies discriminatory power between cell populations without requiring assumptions about the underlying gene expression distribution_).
 ```{r}
 #| eval: false
 Idents(aria) <- "seurat_clusters"
 # Find markers with log2FC threshold of 0.25 and minimum percentage expression of 20%
-all_markers <- FindAllMarkers(aria, only.pos = F, min.pct = 0.2, logfc.threshold = 0.25)
+all_markers <- FindAllMarkers(aria, only.pos = F, min.pct = 0.5, logfc.threshold = 1)
 
-# write_csv(all_markers, "data/20251124-aria_all_markers.csv")
+# write_csv(all_markers, "data/20251202-aria_all_markers.csv")
 
 ```
 
-__5 top markers per cluster in terms of log2FC as all p-value adjusteds are 0.__
+__3 top markers per cluster in terms of log2FC as all adjusted p-values are 0.__
 
 ```{r}
-genes_of_interest <- read_csv("data/20251124-aria_all_markers.csv") |> 
-    arrange(cluster, avg_log2FC) |> 
+genes_of_interest <- read_csv("data/20251202-aria_all_markers.csv") |> 
     group_by(cluster) |>
-    slice_head(n = 5) |> 
+    arrange(desc(abs(avg_log2FC)),.by_group = T) |> 
+    slice_head(n = 3) |> 
     pull(gene) |> 
     unique()
 ```
@@ -54,9 +61,6 @@ genes_of_interest <- read_csv("data/20251124-aria_all_markers.csv") |>
 #| fig-width: 15
 #| fig-height: 10
 
-library(gtable)
-library(grid)
-library(ggtext)
 
 
 # Fetch count data for the genes of interest
@@ -90,7 +94,7 @@ p <- ggplot(violin_data_long, aes(x = seurat_clusters, y = value, fill = seurat_
         axis.title = element_text(size = 14, color = "grey30"),
         panel.grid.major.x = element_blank(),
         panel.grid.minor.x = element_blank(),
-        strip.text = element_text(size = 10, face = "italic", angle = 30)
+        strip.text = element_text(size = 9, face = "italic", angle = 90)
     ) +
     scale_x_discrete(labels = axis_labels)
 
