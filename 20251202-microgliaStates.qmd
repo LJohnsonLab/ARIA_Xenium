@@ -14,6 +14,7 @@ format: html
 library(Seurat)
 library(tidyverse)
 library(patchwork)
+library(kableExtra)
 ### for violin plot customization
 library(gtable)
 library(grid)
@@ -106,4 +107,72 @@ invisible(
 
 grid.newpage()
 grid.draw(g)
+```
+
+## Marker genes for Microglia states
+
+Marker genes for various microglia states based on the previous single cell experiments with ARIA samples. Filtered to include only those present in the current panel.
+
+```{r}
+marker_genes <- list(
+  proliferating = intersect(c("Hmgb2","H2az1","Stmn1","Birc5","Mki67"), Features(microglia)),
+  dam_late = intersect(c("Cst7","Igf1","Fabp5","Gpnmb","Spp1"), Features(microglia)),
+  antigen_presenting = intersect(c("H2-Ab1","H2-Eb1","H2-Aa","Cd74","Cp"), Features(microglia)),
+  interferon_response = intersect(c("Ifit3","Ifit2","Oasl1","Ifit3b","Ifi211"), Features(microglia)),
+  homeostatic = intersect(c("Ccr5","P2ry12","Gm10790","Zfhx3","Dock4","Chd9","Otulinl","Camk2n1","Tmem119","Marcks","Lpcat2"), Features(microglia)),
+  nfkb_activated = intersect(c("Nfkbia","Il1b","Igf1","Nfkbiz","Bcl2a1b","Bclda1d"), Features(microglia)),
+  dam_early = intersect(c("Serpine2","Cst7"), Features(microglia)),
+  remodeling = intersect(c("Pixdc2","Gm37168","Ptchd1","Cacna1a","Klf6"), Features(microglia))
+)
+# Store signature names for later use in renaming columns
+marker_names <- names(marker_genes)
+
+
+# Calculate module scores for each signature 
+# This computes the average expression of signature genes minus average expression of control genes
+
+
+# Calculate module scores for each cell type marker
+# Include the resulting scores in the metadata of the Seurat object
+microglia <- AddModuleScore(
+  object = microglia,
+  features = marker_genes,
+  name = "Marker",
+  ctrl = 20,
+  seed = 42)
+```
+
+```{r}
+kbl(tibble(
+  Marker = marker_names,
+  Genes = map (marker_genes,\(x) paste(x, collapse = ", "))),
+  caption = "Marker genes used for module score calculation") |>
+  kable_styling(full_width = F, "striped")
+```
+
+Module scores were calculated using the `AddModuleScore` function in Seurat, which computes for each cell the average expression of signature genes minus the average expression of 20 randomly selected control genes, thereby controlling for technical variation and background expression levels.
+
+```{r}
+#| column: page
+#| fig-width: 12
+#| fig-height: 12
+
+# Rename module score columns
+n_new  <- length(marker_genes)
+idx    <- (ncol(microglia@meta.data) - n_new + 1):ncol(microglia@meta.data)  # Index of new columns
+colnames(microglia@meta.data)[idx] <- paste0(marker_names, " Score") 
+
+# Visualize module scores on UMAP
+
+markers <- FeaturePlot(microglia, features = names(microglia@meta.data)[idx],
+            cols = c("#fdf9f9ff", "#cc0000"),
+            # 
+            min.cutoff ="q20",max.cutoff = "q90",
+            combine = FALSE) |> 
+map(\(x) x + NoAxes() + NoLegend() + 
+            theme(plot.title = element_text(size = 12, vjust = 0),
+                  panel.border = element_blank()))
+
+# Arrange plots in a grid
+wrap_plots(markers, ncol = 3)
 ```

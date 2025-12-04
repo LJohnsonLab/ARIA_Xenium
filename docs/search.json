@@ -103,5 +103,16 @@
     "crumbs": [
       "References"
     ]
+  },
+  {
+    "objectID": "20251202-microgliaStates.html#marker-genes-for-microglia-states",
+    "href": "20251202-microgliaStates.html#marker-genes-for-microglia-states",
+    "title": "5  Microglia states identification",
+    "section": "5.2 Marker genes for Microglia states",
+    "text": "5.2 Marker genes for Microglia states\nMarker genes for various microglia states based on the previous single cell experiments with ARIA samples. Filtered to include only those present in the current panel.\n\n\n\nMarker genes used for module score calculation\n\n\nMarker\nGenes\n\n\n\n\nproliferating\nHmgb2, H2az1, Mki67\n\n\ndam_late\nCst7, Fabp5, Gpnmb, Spp1\n\n\nantigen_presenting\nH2-Ab1, H2-Eb1, Cd74\n\n\ninterferon_response\nIfit2\n\n\nhomeostatic\nP2ry12, Tmem119, Lpcat2\n\n\nnfkb_activated\nNfkbia, Il1b, Bcl2a1b\n\n\ndam_early\nCst7\n\n\nremodeling\nKlf6\n\n\n\n\n\nModule scores were calculated using the AddModuleScore function in Seurat, which computes for each cell the average expression of signature genes minus the average expression of 20 randomly selected control genes, thereby controlling for technical variation and background expression levels.",
+    "crumbs": [
+      "Microglia characterization",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Microglia states identification</span>"
+    ]
   }
 ]

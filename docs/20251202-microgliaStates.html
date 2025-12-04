@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2025-12-02">
+<meta name="dcterms.date" content="2025-12-04">
 
 <title>5&nbsp; Microglia states identification – ARIA</title>
 <style>
@@ -70,6 +70,8 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
 
 
 </head>
@@ -183,6 +185,7 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#finding-cluster-markers-with-findallmarkers" id="toc-finding-cluster-markers-with-findallmarkers" class="nav-link active" data-scroll-target="#finding-cluster-markers-with-findallmarkers"><span class="header-section-number">5.1</span> Finding cluster markers with <code>FindAllMarkers</code></a></li>
+  <li><a href="#marker-genes-for-microglia-states" id="toc-marker-genes-for-microglia-states" class="nav-link" data-scroll-target="#marker-genes-for-microglia-states"><span class="header-section-number">5.2</span> Marker genes for Microglia states</a></li>
   </ul>
 </nav>
     </div>
@@ -202,7 +205,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">December 2, 2025</p>
+      <p class="date">December 4, 2025</p>
     </div>
   </div>
   
@@ -223,6 +226,67 @@ ul.task-list li input[type="checkbox"] {
 <div class="page-columns page-full">
 <figure class="figure page-columns page-full">
 <p class="page-columns page-full"><img src="20251202-microgliaStates_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img column-screen" width="1440"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="marker-genes-for-microglia-states" class="level2 page-columns page-full" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="marker-genes-for-microglia-states"><span class="header-section-number">5.2</span> Marker genes for Microglia states</h2>
+<p>Marker genes for various microglia states based on the previous single cell experiments with ARIA samples. Filtered to include only those present in the current panel.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-striped caption-top table-sm small" data-quarto-postprocess="true">
+<caption>Marker genes used for module score calculation</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Marker</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Genes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">proliferating</td>
+<td style="text-align: left;">Hmgb2, H2az1, Mki67</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">dam_late</td>
+<td style="text-align: left;">Cst7, Fabp5, Gpnmb, Spp1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">antigen_presenting</td>
+<td style="text-align: left;">H2-Ab1, H2-Eb1, Cd74</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">interferon_response</td>
+<td style="text-align: left;">Ifit2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">homeostatic</td>
+<td style="text-align: left;">P2ry12, Tmem119, Lpcat2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">nfkb_activated</td>
+<td style="text-align: left;">Nfkbia, Il1b, Bcl2a1b</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">dam_early</td>
+<td style="text-align: left;">Cst7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">remodeling</td>
+<td style="text-align: left;">Klf6</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Module scores were calculated using the <code>AddModuleScore</code> function in Seurat, which computes for each cell the average expression of signature genes minus the average expression of 20 randomly selected control genes, thereby controlling for technical variation and background expression levels.</p>
+<div class="cell page-columns page-full">
+<div class="cell-output-display page-columns page-full">
+<div class="page-columns page-full">
+<figure class="figure page-columns page-full">
+<p class="page-columns page-full"><img src="20251202-microgliaStates_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img column-page" width="1152"></p>
 </figure>
 </div>
 </div>
