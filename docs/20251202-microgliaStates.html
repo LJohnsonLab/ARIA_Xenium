@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2025-12-04">
+<meta name="dcterms.date" content="2025-12-07">
 
 <title>5&nbsp; Microglia states identification – ARIA</title>
 <style>
@@ -205,7 +205,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">December 4, 2025</p>
+      <p class="date">December 7, 2025</p>
     </div>
   </div>
   
@@ -233,7 +233,6 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="marker-genes-for-microglia-states" class="level2 page-columns page-full" data-number="5.2">
 <h2 data-number="5.2" class="anchored" data-anchor-id="marker-genes-for-microglia-states"><span class="header-section-number">5.2</span> Marker genes for Microglia states</h2>
-<p>Marker genes for various microglia states based on the previous single cell experiments with ARIA samples. Filtered to include only those present in the current panel.</p>
 <div class="cell">
 <div class="cell-output-display">
 <table class="table table-striped caption-top table-sm small" data-quarto-postprocess="true">
@@ -246,36 +245,96 @@ ul.task-list li input[type="checkbox"] {
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">proliferating</td>
-<td style="text-align: left;">Hmgb2, H2az1, Mki67</td>
+<td style="text-align: left;">Activated</td>
+<td style="text-align: left;">Cd14</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">dam_late</td>
-<td style="text-align: left;">Cst7, Fabp5, Gpnmb, Spp1</td>
+<td style="text-align: left;">Activated/Antigen-presenting</td>
+<td style="text-align: left;">H2-Eb1, H2-Ab1</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">antigen_presenting</td>
-<td style="text-align: left;">H2-Ab1, H2-Eb1, Cd74</td>
+<td style="text-align: left;">Complement activation</td>
+<td style="text-align: left;">C3</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">interferon_response</td>
-<td style="text-align: left;">Ifit2</td>
+<td style="text-align: left;">DAM</td>
+<td style="text-align: left;">Clec7a, Apoe, Cd68, Itgax, Lyz2, Gpnmb, Axl, Lgals3, Cst7, Cd74, Spp1, Grn, Trem2</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">homeostatic</td>
-<td style="text-align: left;">P2ry12, Tmem119, Lpcat2</td>
+<td style="text-align: left;">Early activation</td>
+<td style="text-align: left;">Jun, Junb, Klf4, Atf3, Jund, Fos, Fosb, Klf6, Egr1</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">nfkb_activated</td>
-<td style="text-align: left;">Nfkbia, Il1b, Bcl2a1b</td>
+<td style="text-align: left;">Glycolytic metabolism</td>
+<td style="text-align: left;">Hk1, Hk2, Pkm, Ldhb, Ldha</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">dam_early</td>
-<td style="text-align: left;">Cst7</td>
+<td style="text-align: left;">Homeostatic</td>
+<td style="text-align: left;">C1qa, C1qb, C1qc, Cst3, Cx3cr1, P2ry12, Gpr34, Hexb, Tmem119</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">remodeling</td>
-<td style="text-align: left;">Klf6</td>
+<td style="text-align: left;">Homeostatic/Phagocytic</td>
+<td style="text-align: left;">Mertk</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hypoxic/Glycolytic activation</td>
+<td style="text-align: left;">Hif1a</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">IRM (Interferon-responsive)</td>
+<td style="text-align: left;">Ifit1, Ifit2, Ifitm1, Ifitm2, Ifitm3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">LDAM (Lipid-droplet DAM)</td>
+<td style="text-align: left;">Lpl</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Lipid droplet/LDAM</td>
+<td style="text-align: left;">Plin2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Lipid metabolism</td>
+<td style="text-align: left;">Apod, Clu</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Lipid metabolism/DAM</td>
+<td style="text-align: left;">Abca1, Abca7, Abcg1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Lipid metabolism/Lysosomal</td>
+<td style="text-align: left;">Lipa</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Lipid metabolism/Pro-inflammatory</td>
+<td style="text-align: left;">Ch25h</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Lysosomal</td>
+<td style="text-align: left;">Gusb</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Lysosomal/Activated</td>
+<td style="text-align: left;">Ctsl, Ctsb, Ctsd</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Pan-microglial</td>
+<td style="text-align: left;">Aif1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pro-inflammatory</td>
+<td style="text-align: left;">Ccl4, Ccl3, Il1a, Tnf, Ccl5, Cxcl10, Ccl2, Nlrp3, Cxcl2, Il1b, Ccl12, Ptgs1, Tlr4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Pro-inflammatory DAM</td>
+<td style="text-align: left;">Cd44</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pro-inflammatory signaling</td>
+<td style="text-align: left;">Nfkbia</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Pro-inflammatory/Oxidative stress</td>
+<td style="text-align: left;">Hmox1</td>
 </tr>
 </tbody>
 </table>
@@ -286,7 +345,7 @@ ul.task-list li input[type="checkbox"] {
 <div class="cell-output-display page-columns page-full">
 <div class="page-columns page-full">
 <figure class="figure page-columns page-full">
-<p class="page-columns page-full"><img src="20251202-microgliaStates_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img column-page" width="1152"></p>
+<p class="page-columns page-full"><img src="20251202-microgliaStates_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img column-page" width="1152"></p>
 </figure>
 </div>
 </div>

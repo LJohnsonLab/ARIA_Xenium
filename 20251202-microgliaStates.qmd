@@ -111,9 +111,12 @@ grid.draw(g)
 
 ## Marker genes for Microglia states
 
-Marker genes for various microglia states based on the previous single cell experiments with ARIA samples. Filtered to include only those present in the current panel.
-
 ```{r}
+#| eval: false
+
+# DO NOT RUN: Code to save the marker genes list for future reference
+# Marker genes for various microglia states based on the previous single cell experiments with ARIA samples. 
+# Filtered to include only those present in the current panel.
 marker_genes <- list(
   proliferating = intersect(c("Hmgb2","H2az1","Stmn1","Birc5","Mki67"), Features(microglia)),
   dam_late = intersect(c("Cst7","Igf1","Fabp5","Gpnmb","Spp1"), Features(microglia)),
@@ -143,8 +146,33 @@ microglia <- AddModuleScore(
 ```
 
 ```{r}
+# Marker genes used for module score calculation
+mk <- read_csv("data/JRZFVH_mBrain_480g_gene_list_with_microglial_states_JM.csv")
+marker_genes <- mk |>
+  filter(!is.na(microglia_state)) |>
+  group_by(microglia_state) |>
+  summarise(genes = list(Gene)) |>
+  deframe()
+
+# Store signature names for later use in renaming columns
+marker_names <- names(marker_genes)
+
+# Calculate module scores for each signature 
+# This computes the average expression of signature genes minus average expression of control genes
+
+
+# Calculate module scores for each cell type marker
+# Include the resulting scores in the metadata of the Seurat object
+microglia <- AddModuleScore(
+  object = microglia,
+  features = marker_genes,
+  name = "Marker",
+  ctrl = 20,
+  seed = 42)
+```
+```{r}
 kbl(tibble(
-  Marker = marker_names,
+  Marker = names(marker_genes),
   Genes = map (marker_genes,\(x) paste(x, collapse = ", "))),
   caption = "Marker genes used for module score calculation") |>
   kable_styling(full_width = F, "striped")
@@ -155,7 +183,7 @@ Module scores were calculated using the `AddModuleScore` function in Seurat, whi
 ```{r}
 #| column: page
 #| fig-width: 12
-#| fig-height: 12
+#| fig-height: 24
 
 # Rename module score columns
 n_new  <- length(marker_genes)
